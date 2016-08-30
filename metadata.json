@@ -1,0 +1,22 @@
+{
+  "author": "Luke Tinker",
+  "dependencies": [    {"name":"puppetlabs/stdlib","version_requirement":">= 4.1.0"}, {"name":"jaredjennings/mac_plist_value", "version_requirement":">=0.3.0"}  ],
+  "license": "Apache 2.0",
+  "name": "ltinker-munkitools",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Darwin",
+      "operatingsystemrelease": [
+        "10.9",
+        "10.10",
+        "10.11"
+      ]
+    }
+  ],
+  "project_page": "",
+  "requirements": [],
+  "source": "",
+  "summary": "",
+  "tags": [],
+  "version": "0.1.0"
+}
