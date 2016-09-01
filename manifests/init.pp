@@ -12,6 +12,6 @@
 #
 class munkitools (
   
-) inherits ::munkitool::params{
+) inherits ::munkitools::params{
   
 }
