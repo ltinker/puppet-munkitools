@@ -10,7 +10,7 @@
 #
 # Sample Usage:
 #
-class munkitools::managed_installs (
+class munkitools::managed_preferences (
   $managedInstallsPath                         = "/Library/Preferences", # /ManagedInstalls.plist
   $secureManagedInstallPath                    = "/private/var/root/Library/Preferences",
   $managedInstallDir                           = '/Library/Managed Installs', # string
@@ -85,10 +85,19 @@ class munkitools::managed_installs (
       group   => $group,
       mode    => '0755';
   } 
-    $preferenceDirectory = $managedInstallsPath
+  
+  case $useSecureManagedInstalls {
+    true: {
+      $preferenceDirectory = $secureManagedInstallPath
+    }
+    default: {
+      $preferenceDirectory = $managedInstallsPath
+    }
+  }
+    
     
   if $useSecureManagedInstalls{
-    $preferenceDirectory = $secureManagedInstallPath
+    
     file {
       ["${secureManagedInstallPath}/ManagedInstalls.plist"]:
         ensure  => 'present',
