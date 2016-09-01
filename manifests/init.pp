@@ -10,6 +10,8 @@
 #
 # Sample Usage:
 #
-class munkitools {
-
+class munkitools (
+  
+) inherits ::munkitool::params{
+  
 }
