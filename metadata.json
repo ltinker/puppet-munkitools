@@ -14,7 +14,15 @@
     }
   ],
   "project_page": "https://github.com/ltinker/puppet-munkitools",
-  "requirements": [],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">=3.8.3 <4.0.0"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">=3.8.3 <4.0.0"
+    }],
   "source": "https://github.com/ltinker/puppet-munkitools",
   "summary": "This is a Puppet module that allows you to configure (hopefully) all agent related components of munki",
   "tags": [],
