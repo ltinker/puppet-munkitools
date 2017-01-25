@@ -22,6 +22,7 @@ class munkitools::managed_preferences (
   $installAppleSoftwareUpdates                 = false, # boolean
   $unattendedAppleUpdates                      = false, # boolean
   $softwareUpdateServerURL                     = undef, # string
+  $softwareUpdateServerURLManage               = false, # boolean
   $softwareRepoURL                             = undef, #string
   $packageURL                                  = "${softwareRepoURL}/pkgs", # string
   $catalogURL                                  = "${softwareRepoURL}/catalogs", # string
@@ -54,11 +55,11 @@ class munkitools::managed_preferences (
   $localOnlyManifest                           = "", # string
   $followHTTPRedirects                         = "", # string
   $ignoreSystemProxies                         = false, # boolean
-  ###### 
+  ######
   $user                                        = 'root',
   $group                                       = 'admin',
   $preferenceFile                              = "${managedInstallsPath}/ManagedInstalls.plist",
-  
+
   ){
   file {
     [$managedInstallDir]:
@@ -66,26 +67,26 @@ class munkitools::managed_preferences (
       owner  => $user,
       group  => $group,
       mode   => '0755';
-    
+
     $logsDir:
       ensure => 'directory',
       owner  => $user,
       group  => $group,
       mode   => '0755';
-    
+
     $certsDir:
       ensure  => 'directory',
       owner   => $user,
       group   => $group,
       mode    => '0755';
-      
+
     "${managedInstallsPath}/ManagedInstalls.plist":
       ensure  => 'present',
       owner   => $user,
       group   => $group,
       mode    => '0755';
-  } 
-  
+  }
+
   case $useSecureManagedInstalls {
     true: {
       $preferenceDirectory = $secureManagedInstallPath
@@ -94,10 +95,10 @@ class munkitools::managed_preferences (
       $preferenceDirectory = $managedInstallsPath
     }
   }
-    
-    
+
+
   if $useSecureManagedInstalls{
-    
+
     file {
       ["${secureManagedInstallPath}/ManagedInstalls.plist"]:
         ensure  => 'present',
@@ -105,9 +106,9 @@ class munkitools::managed_preferences (
         group   => $group,
         mode    => '0700';
     }
-    
+
     }
-    
+
     mac_plist_value {"${managedInstallsPath}/ManagedInstalls.plist:AppleSoftwareUpdatesOnly":
       value => $appleSoftwareUpdatesOnly,
     }
@@ -130,11 +131,15 @@ class munkitools::managed_preferences (
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:UnattendedAppleUpdates":
       value => $unattendedAppleUpdates,
     }
-    
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareUpdateServerURL":
-      value => $softwareUpdateServerURL,
+    if $softwareUpdateServerURLManage {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareUpdateServerURL":
+        value => $softwareUpdateServerURL,
+      }
     }
-    
+    else {
+        #TODO: decide if we manage the system path for apple updates instead.
+    }
+
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareRepoURL":
       value => $softwareRepoURL,
     }
@@ -216,7 +221,7 @@ class munkitools::managed_preferences (
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:IgnoreSystemProxies":
       value => $ignoreSystemProxies,
     }
-    
+
 #  $preferences.each |String $resource, Hash $attributes| {
 #    Resources["mac_plist_value"] {
 #      file => "${managedInstallsPath}/ManagedInstalls.plist";
@@ -232,7 +237,7 @@ class munkitools::managed_preferences (
 # /Library/Managed Installs/certs $certsDir
 
 # Already Exists by Default on OSX /private/var/root/Library/Prefereces/
-# 
+#
 
 # following files are managed
 # /Library/Preferences/ManagedInstalls.plist
@@ -243,4 +248,3 @@ class munkitools::managed_preferences (
 # Structure
 # if useSecureManageInstalls = True
 # all variables except ManagedInstallDir, InstallAppleSoftwareUpdates, AppleUpdatesOnly, ShowRemovalDetail, InstallRequiresLogout and HelpURL are written to secureManagedInstallPath
-
