@@ -57,7 +57,7 @@ class munkitools::managed_preferences (
   $ignoreSystemProxies                         = false, # boolean
   ######
   $user                                        = 'root',
-  $group                                       = 'admin',
+  $group                                       = 'wheel',
   $preferenceFile                              = "${managedInstallsPath}/ManagedInstalls.plist",
 
   ){
@@ -132,12 +132,9 @@ class munkitools::managed_preferences (
       value => $unattendedAppleUpdates,
     }
     if $softwareUpdateServerURLManage {
-      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareUpdateServerURL":
+      mac_plist_value {"/Library/Preferences/com.apple.SoftwareUpdate:CatalogURL":
         value => $softwareUpdateServerURL,
       }
-    }
-    else {
-        #TODO: decide if we manage the system path for apple updates instead.
     }
 
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareRepoURL":
