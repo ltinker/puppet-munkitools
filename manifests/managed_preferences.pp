@@ -21,9 +21,9 @@ class munkitools::managed_preferences (
   $appleSoftwareUpdatesOnly                    = false, # boolean
   $installAppleSoftwareUpdates                 = false, # boolean
   $unattendedAppleUpdates                      = false, # boolean
-  $softwareUpdateServerURL                     = undef, # string
+  $softwareUpdateServerURL                     = none, # string
   $softwareUpdateServerURLManage               = false, # boolean
-  $softwareRepoURL                             = undef, #string
+  $softwareRepoURL                             = none, #string
   $packageURL                                  = "${softwareRepoURL}/pkgs", # string
   $catalogURL                                  = "${softwareRepoURL}/catalogs", # string
   $manifestURL                                 = "${softwareRepoURL}/manifests", #string
@@ -31,7 +31,7 @@ class munkitools::managed_preferences (
   $clientResourceURL                           = "${softwareRepoURL}/client_resources", # string
   $clientResourceFilename                      = "site_default.zip", # string
   $helpURL                                     = none, # string
-  $clientIdentifier                            = undef, # string
+  $clientIdentifier                            = none, # string
   $logFile                                     = "${logsDir}/ManagedSoftwareUpdate", #string
   $logToSyslog                                 = false, #boolean
   $loggingLevel                                = 1, #integer
@@ -40,7 +40,7 @@ class munkitools::managed_preferences (
   $useClientCertificateCNAsClientIdentifier    = false, #boolean
   $softwareRepoCAPath                          = "", # string
   $softwareRepoCAPathCertificate               = "${certsDir}/ca.pem", # string
-  $clientCertificatePath                       = "${certsDir}/cert.pem", # string
+  $clientCertificatePath                       = "${certsDir}/clientcert.pem", # string
   $clientKeyPath                               = "", # string
   $additionalHttpHeaders                       = "", # array
   $packageVerificationMode                     = "hash", # string
@@ -105,6 +105,13 @@ class munkitools::managed_preferences (
         owner   => $user,
         group   => $group,
         mode    => '0700';
+    }
+  }
+  unless $useSecureManagedInstalls{
+
+    file {
+      ["${secureManagedInstallPath}/ManagedInstalls.plist"]:
+        ensure  => 'absent',
     }
 
     }
