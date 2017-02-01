@@ -21,28 +21,27 @@ class munkitools::managed_preferences (
   $appleSoftwareUpdatesOnly                    = false, # boolean
   $installAppleSoftwareUpdates                 = false, # boolean
   $unattendedAppleUpdates                      = false, # boolean
-  $softwareUpdateServerURL                     = none, # string
-  $softwareUpdateServerURLManage               = false, # boolean
-  $softwareRepoURL                             = none, #string
-  $packageURL                                  = "${softwareRepoURL}/pkgs", # string
-  $catalogURL                                  = "${softwareRepoURL}/catalogs", # string
-  $manifestURL                                 = "${softwareRepoURL}/manifests", #string
-  $iconURL                                     = "${softwareRepoURL}/icons", #string
-  $clientResourceURL                           = "${softwareRepoURL}/client_resources", # string
-  $clientResourceFilename                      = "site_default.zip", # string
-  $helpURL                                     = none, # string
-  $clientIdentifier                            = none, # string
-  $logFile                                     = "${logsDir}/ManagedSoftwareUpdate", #string
-  $logToSyslog                                 = false, #boolean
-  $loggingLevel                                = 1, #integer
-  $daysBetweenNotifications                    = 1, #integer
-  $useClientCertificate                        = false, #boolean
-  $useClientCertificateCNAsClientIdentifier    = false, #boolean
-  $softwareRepoCAPath                          = "", # string
-  $softwareRepoCAPathCertificate               = "${certsDir}/ca.pem", # string
-  $clientCertificatePath                       = "${certsDir}/clientcert.pem", # string
-  $clientKeyPath                               = "", # string
-  $additionalHttpHeaders                       = "", # array
+  $softwareUpdateServerURL                     = undef, # string
+  $softwareRepoURL                             = undef, # string
+  $packageURL                                  = undef, # string, Defaults to "${softwareRepoURL}/pkgs"
+  $catalogURL                                  = undef, # string, Defaults to "${softwareRepoURL}/catalogs"
+  $manifestURL                                 = undef, # string, Defaults to "${softwareRepoURL}/manifests"
+  $iconURL                                     = undef, # string, Defaults to "${softwareRepoURL}/icons"
+  $clientResourceURL                           = undef, # string, Defaults to "${softwareRepoURL}/client_resources"
+  $clientResourceFilename                      = undef, # string, Defaults to $clientIdentifier then "site_default.zip"
+  $helpURL                                     = undef, # string
+  $clientIdentifier                            = undef, # string
+  $logFile                                     = undef, # string, Defaults to "${logsDir}/ManagedSoftwareUpdate"
+  $logToSyslog                                 = false, # boolean
+  $loggingLevel                                = 1, # integer
+  $daysBetweenNotifications                    = 1, # integer
+  $useClientCertificate                        = false, # boolean
+  $useClientCertificateCNAsClientIdentifier    = false, # boolean
+  $softwareRepoCAPath                          = undef, # string
+  $softwareRepoCAPathCertificate               = undef, # string, Defaults to "${certsDir}/ca.pem"
+  $clientCertificatePath                       = undef, # string, Defaults to "${certsDir}/clientcert.pem"
+  $clientKeyPath                               = undef, # string
+  $additionalHttpHeaders                       = undef, # array
   $packageVerificationMode                     = "hash", # string
   $supressUserNotification                     = false, # boolean
   $supressAutoInstall                          = false, # boolean
@@ -52,8 +51,8 @@ class munkitools::managed_preferences (
   $showRemovalDetail                           = false, # boolean
   $mSULogEnabled                               = false, # boolean
   $mSUDebugLogEnabled                          = false, # boolean
-  $localOnlyManifest                           = "", # string
-  $followHTTPRedirects                         = "", # string
+  $localOnlyManifest                           = undef, # string
+  $followHTTPRedirects                         = undef, # string
   $ignoreSystemProxies                         = false, # boolean
   ######
   $user                                        = 'root',
@@ -138,26 +137,65 @@ class munkitools::managed_preferences (
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:UnattendedAppleUpdates":
       value => $unattendedAppleUpdates,
     }
-    if $softwareUpdateServerURLManage {
-      mac_plist_value {"/Library/Preferences/com.apple.SoftwareUpdate:CatalogURL":
-        value => $softwareUpdateServerURL,
+    # if $softwareUpdateServerURL {
+      # mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareUpdateServerURL":
+        # value => $softwareUpdateServerURL,
+      # }
+    # }
+    # unless $softwareUpdateServerURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareUpdateServerURL":
+        ensure => absent,
+      }
+    # }
+    if $softwareRepoURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareRepoURL":
+        value => $softwareRepoURL,
       }
     }
-
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareRepoURL":
-      value => $softwareRepoURL,
+    unless $softwareRepoURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:SoftwareRepoURL":
+        ensure => absent,
+      }
     }
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:PackageURL":
-      value => $packageURL,
+    if $packageURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:PackageURL":
+        value => $packageURL,
+      }
     }
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:CatalogURL":
-      value => $catalogURL,
+    unless $packageURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:PackageURL":
+        ensure => absent,
+      }
     }
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:ManifestURL":
-      value => $manifestURL,
+    if $catalogURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:CatalogURL":
+        value => $catalogURL,
+      }
     }
-    mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:IconURL":
-      value => $iconURL,
+    unless $catalogURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:CatalogURL":
+        ensure => absent,
+      }
+    }
+    if $manifestURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:ManifestURL":
+        value => $manifestURL,
+      }
+    }
+    unless $manifestURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:ManifestURL":
+        ensure => absent,
+      }
+    }
+    if $iconURL {
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:IconURL":
+        value => $iconURL,
+        }
+    }
+    unless $iconURL{
+      mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:IconURL":
+        ensure => absent,
+      }
     }
     mac_plist_value {"${preferenceDirectory}/ManagedInstalls.plist:ClientResourceFilename":
       value => $clientResourceFilename,
